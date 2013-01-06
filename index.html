@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title></title>
+<meta name="description" content="" />
+<meta name="keywords" content="" />
+<!--iPhone-->
+<meta name="viewport" content="initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="format-detection" content="telephone=no" />
+<meta names="apple-mobile-web-app-status-bar-style" content="default" />
+<!--/iPhone-->
+<!--file-->
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28381001-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+<style>
+header,footer {
+	display: block;
+}
+</style>
+<!--/file-->
+</head>
+<body>
+	<header>
+		<p><label for="name">名前: </label><input id="name" name="name" type="text" value="" /></p>
+		<p><label for="age">年齢: </label><input id="age" name="age" type="text" value="" /></p>
+		<p><label for="option">備考: </label><input id="option" name="option" type="text" value="" /></p>
+		<p><input id="submit" type="submit" value="追加" /></p>
+	</header>
+	<section>
+		<h2>Data</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>名前</th>
+					<th>年齢</th>
+					<th>備考</th>
+				</tr>
+			</thead>
+			<tbody id="data">
+
+			</tbody>
+		</table>
+		<p><input id="delbtn" type="submit" value="全データ削除" /></p>
+	</section>
+<script type="text/javascript" src="websql.js"></script>
+<script>
+if (!WebSQL.isSupport()) {
+	alert("非サポートブラウザです");
+	return;
+}
+
+function getAllElementsById(arr) {
+	var result = {};
+	for (var i = 0; i < arr.length; i++) {
+		result[arr[i]] = document.getElementById(arr[i]);
+	}
+	return result;
+}
+
+var elements = getAllElementsById([
+	"data",
+	"name",
+	"age",
+	"option",
+	"submit",
+	"delbtn"
+]);
+
+var db = new WebSQL('sample', '0.1', 'サンプルデータベース', 1048576);
+db.createTable("test",[
+	"name",
+	"age",
+	"option"
+],true).select("test").then(function(result) {
+	for (var i = 0; i < result.rows.length;i++) {
+		var item = result.rows.item(i);
+		createRow(item.name,item.age,item.option);
+	}
+});
+
+elements.submit.addEventListener("click",function() {
+	var nameVal = elements.name.value;
+	var ageVal = elements.age.value;
+	var optionVal = elements.age.value;
+	if (!nameVal || !ageVal ) {
+		alert("名前・年齢を必ず入力してください");
+		return;
+	}
+	addRow(nameVal,ageVal,optionVal);
+});
+
+elements.delbtn.addEventListener("click",function() {
+	if (window.confirm("削除しますか？")) {
+		db.dropTable("test").then(function() {
+			elements.data.innerHTML = "";
+			alert("削除しました");
+			location.reload();
+		});
+	}
+});
+
+function createRow(name,age,option) {
+	var tr = document.createElement("tr");
+	var n = document.createElement("td");
+	var a = document.createElement("td");
+	var o = document.createElement("td");
+
+	n.innerHTML = name;
+	a.innerHTML = age;
+	o.innerHTML = option;
+
+	tr.appendChild(n);
+	tr.appendChild(a);
+	tr.appendChild(o);
+	elements.data.appendChild(tr);
+}
+function addRow(name,age,option) {
+	db.insert("test",{
+		name: name,
+		age: age,
+		option: option
+	}).then(function() {
+ 		createRow(name,age,option);
+		alert("追加しました。[" + name + "]");
+		elements.name.value = "";
+		elements.age.value = "";
+		elements.option.value = "";
+	});
+}
+</script>
+</body>
+</html>
