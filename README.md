@@ -126,11 +126,11 @@ SQL文がselect文の場合にはcallback関数でresultを取得できます。
         "age",
         "option"
     ],true).select("test").then(function(result) {
-    for (var i = 0; i < result.rows.length;i++) {
-        var item = result.rows.item(i);
-        createRow(item.name,item.age,item.option);
-    }
-});
+        for (var i = 0; i < result.rows.length;i++) {
+            var item = result.rows.item(i);
+            createRow(item.name,item.age,item.option);
+        }
+    });
 
 transactionやexecuteSQLもつなぐことができます。
 
