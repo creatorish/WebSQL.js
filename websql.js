@@ -8,7 +8,7 @@
  * Version: 0.1
  * Author: yuu.creatorish
  * URL: http://creatorish.com
- * PluginURL: http://creatorish.com/lab/
+ * PluginURL: http://creatorish.com/lab/6226
  *
 *******************************************************************/
 (function() {
